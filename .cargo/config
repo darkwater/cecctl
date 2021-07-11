@@ -1,0 +1,2 @@
+# [target.x86_64-unknown-linux-gnu]
+# runner = [ "bash", "-c", "scp $@ sinon.nv:/tmp/cecctl && exec ssh sinon.nv DISPLAY=:0 /tmp/cecctl", "--" ]
