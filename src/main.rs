@@ -76,6 +76,8 @@ fn main() -> Result<()> {
         .try_deserialize::<Config>()
         .context("failed to parse config")?;
 
+    let mut children = vec![];
+
     let mut last_pressed = None;
     let mut received_something = false;
     let cmd_handler = {
@@ -108,7 +110,8 @@ fn main() -> Result<()> {
 
                     log::debug!("running {:?}", cmd);
 
-                    Command::new("/bin/sh").arg("-c").arg(cmd).spawn().unwrap();
+                    let child = Command::new("/bin/sh").arg("-c").arg(cmd).spawn().unwrap();
+                    children.push(child);
                 }
 
                 (CecOpcode::UserControlRelease, _) => {
@@ -125,6 +128,8 @@ fn main() -> Result<()> {
 
                 _ => {}
             }
+
+            children.retain_mut(|child| child.try_wait().unwrap().is_none());
         }
     };
 
